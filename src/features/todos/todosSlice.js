@@ -1,7 +1,7 @@
 const initialState = [
-    { id: 0, text: 'Learn redux', completed: true },
-    { id: 1, text: 'Learn Redux', completed: false },
-    { id: 2, text: 'Building something fun', completed: false }
+    // { id: 0, text: 'Learn redux', completed: true },
+    // { id: 1, text: 'Learn Redux', completed: false },
+    // { id: 2, text: 'Building something fun', completed: false }
 ]
 
 function nextTodoId(todos) {
