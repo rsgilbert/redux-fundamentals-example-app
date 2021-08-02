@@ -6,14 +6,13 @@ import './api/server'
 import store from './store';
 import { Provider } from 'react-redux';
 import { fetchTodos } from './features/todos/todosSlice';
+import { todoAdded } from './features/todos/todosSlice';
+
 
 store.dispatch(fetchTodos);
 
-function todoAdded(text) {
-  return { payload: text, type: 'todos/todoAdded' }
-}
 
-store.dispatch(todoAdded('HI'));
+store.dispatch(todoAdded('HI there friend'));
 
 
 ReactDOM.render(

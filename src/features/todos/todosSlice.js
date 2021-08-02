@@ -1,6 +1,5 @@
 import { client } from '../../api/client';
-import { createSelector } from '@reduxjs/toolkit';
-
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     todos: [
@@ -18,7 +17,58 @@ function nextTodoId(state) {
     return maxId + 1;
 }
 
-export default function todosReducer(state = initialState, action) {
+
+const todosSlice = createSlice({ 
+    name: 'todos', 
+    initialState,
+    reducers: {
+        todoAdded: {
+            reducer(state, action) {
+                console.log('bef',action);
+                state.todos.push(//{
+                    //id: nextTodoId(state),
+                    action.payload
+                );
+            },
+
+            prepare(text) {
+                return {
+                    payload: { 
+                        id: text.length,
+                        text,
+                        completed: false
+                    }
+                }
+            }
+        },
+        todoToggled(state, action) {
+            const todo = state.todos.find(function(todo) {
+                return todo.id === action.payload;
+            });
+            todo.completed = !todo.completed;
+        },
+        todoLoaded(state, action) {
+            state.todos = action.payload;
+        },
+
+        todosLoading(state, action) {
+            return {
+                ...state,
+                status: 'loading'
+            }
+        }
+    }
+});
+
+// Action creators
+export const { todoAdded, todoToggled, todoLoaded, todosLoading } = todosSlice.actions;
+
+export default todosSlice.reducer;
+
+// Deprecated
+// Old fashioned way of created sub reducers
+
+export function deprecated_todosReducer(state = initialState, action) {
     switch(action.type) {
         case 'todos/todoAdded': {
             return {
@@ -76,8 +126,12 @@ export default function todosReducer(state = initialState, action) {
 }
 
 // Thunk function
-export async function fetchTodos(dispatch, getState) {
+export async function fetchTodos(dispatch, getState) {    
     const response = await client.get('/fakeApi/todos');
+    console.log(response);
+    dispatch(todoLoaded(response.todos)); 
+    console.log(todoAdded('Omega'));
+    dispatch(todosLoading())
     dispatch({ type: 'todos/todoLoaded' , payload: response.todos });
 }
 
