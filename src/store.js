@@ -1,21 +1,18 @@
 import { createStore, compose, applyMiddleware } from 'redux';
-import rootReducer from './reducer';
 import { includeMeaningOfLife, sayHiOnDispatch } from './exampleAddons/enhancers';
 import { logMiddleware } from './exampleAddons/middleware';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunkMiddleware from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
+import todosReducer from './features/todos/todosSlice';
+import filtersReducer from './features/filters/filtersSlice';
 
 
+const rootReducer = {
+    todos: todosReducer,
+    filters: filtersReducer
+}
 
-const middlewareEnhancer = applyMiddleware(thunkMiddleware, logMiddleware);
-
-const composedEnhancer = compose(includeMeaningOfLife, sayHiOnDispatch);
-
-const devToolsEnhancer = composeWithDevTools(
-    // Add all necessary middleware 
-    middlewareEnhancer
-);
-
-const store = createStore(rootReducer, undefined, devToolsEnhancer);
+const store = configureStore({ reducer: rootReducer });
 
 export default store;
