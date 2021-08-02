@@ -4,28 +4,23 @@ import './index.css'
 import App from './App'
 import './api/server'
 import store from './store';
+import { Provider } from 'react-redux';
+import { fetchTodos } from './features/todos/todosSlice';
 
+store.dispatch(fetchTodos);
 
-// log initial state
-// console.log('Initial state', store.getState());
+function todoAdded(text) {
+  return { payload: text, type: 'todos/todoAdded' }
+}
 
-// Every time the state changes, log it
-store.subscribe(function() { 
- console.log(store.getState());
-});
-
-
-
-// Dispatch some action
-store.dispatch({ type: 'todos/todoAdded', payload: 'Learn about actions'});
-// store.dispatch({ type: 'todos/todoAdded', payload: 'Drink yorghurt'});
-// store.dispatch({ type: 'filters/statusFilterChanged', payload: "HOT"});
-
+store.dispatch(todoAdded('HI'));
 
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 )
