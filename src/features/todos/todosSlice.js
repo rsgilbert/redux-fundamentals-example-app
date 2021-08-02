@@ -19,9 +19,9 @@ function nextTodoId(state) {
 
 export const fetchTodos = createAsyncThunk('todos/fetchTodos', async function() {
     const response = await client.get('/fakeApi/todos');
-    console.log('c a r', response);
     return response.todos;
 });
+
 
 export const saveNewTodo = createAsyncThunk('todos/saveNewTodo', async function(text) {
     const initialTodo = { text };
@@ -37,17 +37,15 @@ const todosSlice = createSlice({
     reducers: {
         todoAdded: {
             reducer(state, action) {
-                console.log('bef',action);
-                state.todos.push(//{
-                    //id: nextTodoId(state),
-                    action.payload
-                );
+                state.todos.push({
+                    id: nextTodoId(state),
+                    ...action.payload
+                });
             },
 
             prepare(text) {
                 return {
                     payload: { 
-                        id: text.length,
                         text,
                         completed: false
                     }
