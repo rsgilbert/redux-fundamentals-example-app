@@ -40,9 +40,7 @@ function TodoListItem({ todo }) {
     const [newTodo, setNewTodo] = useState('');
     const dispatch = useDispatch();
     function handleChange({ target }) {
-        setNewTodo(target.value);
-        const saveThunk = saveNewTodo(target.value);
-        
+        setNewTodo(target.value);        
     }
 
     function handleBlur({ target }) {

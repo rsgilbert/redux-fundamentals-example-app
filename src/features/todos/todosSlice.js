@@ -1,5 +1,5 @@
 import { client } from '../../api/client';
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const initialState = {
     todos: [
@@ -7,7 +7,7 @@ const initialState = {
         { id: 1, text: 'Learn Redux', completed: false },
         { id: 2, text: 'Building something fun', completed: false }
     ],
-    status: 'idle'
+    status: 'NO CHANGE'
 }
 
 function nextTodoId(state) {
@@ -17,6 +17,19 @@ function nextTodoId(state) {
     return maxId + 1;
 }
 
+export const fetchTodos = createAsyncThunk('todos/fetchTodos', async function() {
+    const response = await client.get('/fakeApi/todos');
+    console.log('c a r', response);
+    return response.todos;
+});
+
+export const saveNewTodo = createAsyncThunk('todos/saveNewTodo', async function(text) {
+    const initialTodo = { text };
+    console.log('initial', initialTodo);
+    const response = await client.post('/fakeApi/todos', { todo: initialTodo });
+    console.log(response)
+    return response.todo.text;
+});
 
 const todosSlice = createSlice({ 
     name: 'todos', 
@@ -57,6 +70,23 @@ const todosSlice = createSlice({
                 status: 'loading'
             }
         }
+    },
+    extraReducers: function(builder) {
+        builder
+            .addCase(saveNewTodo.fulfilled, function(state, action) {
+                console.log('save fulfilled', action);
+                state.status = 'SAVED';
+            })
+            .addCase(saveNewTodo.pending, function(state, action) {
+                state.status = 'SAVING';
+            })
+            .addCase(fetchTodos.pending, function(state, action) {
+                state.status = 'loading';
+            })
+            .addCase(fetchTodos.fulfilled, function(state, action) {
+                console.log('fulfilled', action)
+                state.status = 'fulfilled';
+            })
     }
 });
 
@@ -126,7 +156,8 @@ export function deprecated_todosReducer(state = initialState, action) {
 }
 
 // Thunk function
-export async function fetchTodos(dispatch, getState) {    
+// Deprecated, use the new fetchTodos function
+export async function deprecated_fetchTodos(dispatch, getState) {    
     const response = await client.get('/fakeApi/todos');
     console.log(response);
     dispatch(todoLoaded(response.todos)); 
@@ -143,7 +174,8 @@ export function dispatchIdle(dispatch) {
     dispatch({ type: 'todos/todoIdle' });
 }
 
-export function saveNewTodo(text) {
+// Deprecated
+export function deprecated_saveNewTodo(text) {
     console.log('newt', text);
     return async function saveNewTodoThunk(dispatch, getState) {
         dispatchLoading(dispatch);
